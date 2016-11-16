@@ -1,0 +1,15 @@
+.top15 {
+    margin-top: 15px;
+}
+
+.errors {
+    color: #cc0000;
+}
+
+#searchBar {
+    width: 50%;
+}
+
+.searchItems {
+    margin-top: 10px;
+}
