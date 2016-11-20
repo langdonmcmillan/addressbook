@@ -29,8 +29,10 @@ import org.springframework.core.io.ClassPathResource;
  *
  * @author apprentice
  */
-public class DAOInMemImpl implements AddressBookDAO {
-
+public class DAOInMemImpl {
+    /*
+    MUST BE REFACTORED USING STATE AND CITY MODELS
+   
     private ArrayList<Address> addressBook;
     private final String DELIMETER = "::";
     private final String FILE_NAME = "addresses.txt";
@@ -123,4 +125,6 @@ public class DAOInMemImpl implements AddressBookDAO {
                 .collect(Collectors.toList());
         return (ArrayList<Address>) allAddresses;
     }
+
+*/
 }

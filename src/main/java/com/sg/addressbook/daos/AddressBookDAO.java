@@ -6,6 +6,7 @@
 package com.sg.addressbook.daos;
 
 import com.sg.addressbook.models.Address;
+import com.sg.addressbook.models.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +18,14 @@ import java.util.Map;
 public interface AddressBookDAO {
     public Address createAddress(Address address);
     public Address getAddress(int id);
-    public void updateAddress(int id, Address address);
+    public void updateAddress(Address address);
     public void deleteAddress(int id);
     public ArrayList<Address> searchByName(String name);
     public ArrayList<Address> searchByCity(String cityName);
     public ArrayList<Address> searchByState(String stateName);
     public ArrayList<Address> searchByZip(String zipCode);
     public ArrayList<Address> getAllAddresses();
+    public ArrayList<State> getAllStates();
+    public Integer getStateID(String stateName);
     public int getAddressBookSize();
 }

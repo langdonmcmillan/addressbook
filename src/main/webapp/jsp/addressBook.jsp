@@ -50,8 +50,8 @@
                                 <td><button type='submit' class='btn btn-primary' value='${address.id}' name='id'>Select</button></td>
                                 <td><c:out value='${address.firstName}'/></td>
                                 <td><c:out value='${address.lastName}'/></td>
-                                <td><c:out value='${address.city}'/></td>
-                                <td><c:out value='${address.state}'/></td>
+                                <td><c:out value='${address.city.cityName}'/></td>
+                                <td><c:out value='${address.state.stateInitials}'/></td>
                             </tr>
                         </c:forEach>
                         </form>
@@ -59,7 +59,7 @@
                 </div>
             </div>
         </div>
-        <script src="${pageContext.request.contextPath}/js/jquery-3.0.0.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery-2.2.4.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
     </body>
 </html>

@@ -38,13 +38,16 @@
                 </div>
                 <label for="edit-city" class="col-md-4">City:</label>
                 <div class="col-md-8">
-                    <sf:input type="text" class="form-control" id="edit-city" path="city" placeholder="City"/>
+                    <sf:input type="text" class="form-control" id="edit-city" path="city.cityName" placeholder="City"/>
                     <sf:errors path="city" cssClass="errors"></sf:errors>
                 </div>
                 <label for="edit-state" class="col-md-4">State:</label>
                 <div class="col-md-8">
-                    <sf:input type="text" class="form-control" id="edit-state" path="state" placeholder="State"/>
-                    <sf:errors path="state" cssClass="errors"></sf:errors>
+                <sf:select class="form-control" id="edit-state" path="state.stateName">
+                    <c:forEach var='state' items='${states}'>
+                        <sf:option value="${state.stateName}"></sf:option>
+                    </c:forEach>
+                </sf:select>
                 </div>
                 <label for="edit-zip" class="col-md-4">Zip:</label>
                 <div class="col-md-8">
@@ -58,7 +61,7 @@
             </div>
         </sf:form>
         </div>
-        <script src="${pageContext.request.contextPath}/js/jquery-3.0.0.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery-2.2.4.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
     </body>
 </html>

@@ -24,19 +24,16 @@ public class Address {
     @Length(max = 50, message = "Cannot be greater than 50 characters")
     @NotEmpty(message = "Please enter a street.")
     private String street;
-    @Length(max = 50, message = "Cannot be greater than 50 characters")
-    @NotEmpty(message = "Please enter a city.")
-    private String city;
-    @Length(max = 50, message = "Cannot be greater than 50 characters")
-    @NotEmpty(message = "Please enter a state.")
-    private String state;
+    private City city;
+    private State state;
     @Length(max = 5, min = 5, message = "Please enter a valid zip code")
     @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "The zip code must be only numbers")
     @NotEmpty(message = "Please enter a zip code.")
     private String zip;
     
     public Address() {
-        
+        city = new City();
+        state = new State();
     }
 
     public int getId() {
@@ -67,22 +64,6 @@ public class Address {
         this.street = street;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     public String getZip() {
         return zip;
     }
@@ -106,5 +87,21 @@ public class Address {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 }

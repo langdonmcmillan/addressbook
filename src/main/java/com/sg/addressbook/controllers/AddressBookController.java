@@ -13,6 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ public class AddressBookController {
     
     private AddressBookDAO dao;
     
+    @Autowired
     @Inject
     public AddressBookController(AddressBookDAO dao) {
         this.dao = dao;
@@ -44,6 +46,7 @@ public class AddressBookController {
     public String displayEdit(Model model, HttpServletRequest req) {
         int id = Integer.parseInt(req.getParameter("id"));
         model.addAttribute("address", dao.getAddress(id));
+        model.addAttribute("states", dao.getAllStates());
         return "editAddress";
     }
     
@@ -52,7 +55,10 @@ public class AddressBookController {
         if (result.hasErrors()) {
             return "editAddress";
         }
-        dao.updateAddress(address.getId(), address);
+        Integer stateID = dao.getStateID(address.getState().getStateName());
+        address.getState().setStateID(stateID);
+        address.getCity().setStateID(stateID);
+        dao.updateAddress(address);
         return "redirect:addressBook";
     }
     
@@ -60,6 +66,7 @@ public class AddressBookController {
     public String displayAddAddress(Model model) {
         Address address = new Address();
         model.addAttribute("address", address);
+        model.addAttribute("states", dao.getAllStates());
         return "addAddress";
     }
     
@@ -68,6 +75,9 @@ public class AddressBookController {
         if (result.hasErrors()) {
             return "addAddress";
         }
+        Integer stateID = dao.getStateID(address.getState().getStateName());
+        address.getState().setStateID(stateID);
+        address.getCity().setStateID(stateID);
         dao.createAddress(address);
         return "redirect:addressBook";
     }

@@ -30,8 +30,10 @@ import org.springframework.core.io.ClassPathResource;
  *
  * @author apprentice
  */
-public class DAOFileIOImpl implements AddressBookDAO {
-
+public class DAOFileIOImpl {
+    
+    /*
+    MUST BE REFACTORED USING CITY AND STATE MODELS
     private ArrayList<Address> addressBook;
     private final String DELIMETER = "::";
     private final String FILE_PATH = System.getProperty("user.home") + File.separator 
@@ -191,4 +193,5 @@ public class DAOFileIOImpl implements AddressBookDAO {
         decodedAddress.setZip(addressArray[6]);
         return decodedAddress;
     }
+    */
 }

@@ -7,12 +7,17 @@
 import com.sg.addressbook.daos.AddressBookDAO;
 import com.sg.addressbook.daos.DAOInMemImpl;
 import com.sg.addressbook.models.Address;
+import com.sg.addressbook.models.City;
+import com.sg.addressbook.models.State;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  *
@@ -21,252 +26,305 @@ import org.junit.Before;
 public class AddressBookDAOTest {
     
     public AddressBookDAO abDAO;
-    private ArrayList<Address> tempData;
-
-    public AddressBookDAOTest() {
-        abDAO = new DAOInMemImpl();
-        tempData = abDAO.getAllAddresses();
-        }
 
     @Before
     public void setUp() {
-        // Assume getAllIds and deleteAddress work - start with blank data structure 
-        abDAO.getAllAddresses().stream().forEach(a -> abDAO.deleteAddress(a.getId()));
-    }
-    
-    @After
-    public void reset() {
-        tempData.stream().forEach(a -> abDAO.createAddress(a));
+        ApplicationContext ctx
+                = new ClassPathXmlApplicationContext("test-applicationContext.xml");
+        abDAO = ctx.getBean("addressBookDB", AddressBookDAO.class);
+        
+        JdbcTemplate template = (JdbcTemplate) ctx.getBean("jdbcTemplate");
+        
+        template.execute("delete from Addresses");
+        template.execute("delete from Cities");
     }
     
     @Test
     public void testCreateAddressAddOne() {
+        City city = new City();
+        State state = new State();
         Address address = new Address();
+        
+        city.setCityName("CityName");
+        city.setStateID(1);
+        state.setStateID(1);
         address.setFirstName("First");
         address.setLastName("Last");
         address.setStreet("Street");
-        address.setCity("City");
-        address.setState("State");
+        address.setCity(city);
+        address.setState(state);
         address.setZip("12345");
         abDAO.createAddress(address);
         
         assertEquals(1, abDAO.getAddressBookSize());
-        assertEquals(address, abDAO.getAddress(1));
-        assertEquals("First", abDAO.getAddress(1).getFirstName());
-        assertEquals("Last", abDAO.getAddress(1).getLastName());
-        assertEquals("Street", abDAO.getAddress(1).getStreet());
-        assertEquals("City", abDAO.getAddress(1).getCity());
-        assertEquals("State", abDAO.getAddress(1).getState());
-        assertEquals("12345", abDAO.getAddress(1).getZip());
+        assertEquals("First", abDAO.getAddress(address.getId()).getFirstName());
+        assertEquals("Last", abDAO.getAddress(address.getId()).getLastName());
+        assertEquals("Street", abDAO.getAddress(address.getId()).getStreet());
+        assertEquals("CityName", abDAO.getAddress(address.getId()).getCity().getCityName());
+        assertEquals("Alabama", abDAO.getAddress(address.getId()).getState().getStateName());
+        assertEquals("12345", abDAO.getAddress(address.getId()).getZip());
     }
     
     @Test
     public void testCreateAddressAddTen() {
         for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
             Address address = new Address();
+            
+            city.setCityName("CityName");
+            city.setStateID(i);
+            state.setStateID(i);
             address.setFirstName("First" + i);
             address.setLastName("Last" + i);
             address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
             abDAO.createAddress(address);
         }
-        assertEquals(10, abDAO.getAddressBookSize());
-        assertEquals(10, abDAO.getAddress(10).getId());
-        assertEquals("First10", abDAO.getAddress(10).getFirstName());
-        assertEquals("Last10", abDAO.getAddress(10).getLastName());
-        assertEquals("Street10", abDAO.getAddress(10).getStreet());
-        assertEquals("City10", abDAO.getAddress(10).getCity());
-        assertEquals("State10", abDAO.getAddress(10).getState());
-        assertEquals("10", abDAO.getAddress(10).getZip());
+        
+        City city = new City();
+        State state = new State();
+        Address address = new Address();
+        
+        city.setCityName("CityName");
+        city.setStateID(1);
+        state.setStateID(1);
+        address.setFirstName("First");
+        address.setLastName("Last");
+        address.setStreet("Street");
+        address.setCity(city);
+        address.setState(state);
+        address.setZip("12345");
+        abDAO.createAddress(address);
+        
+        assertEquals(11, abDAO.getAddressBookSize());
+        
     }
     
-    @Test
-    public void testCreateAddressAdd525() {
-        for (int i = 1; i <= 525; i++) {
-            Address address = new Address();
-            address.setFirstName("First" + i);
-            address.setLastName("Last" + i);
-            address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
-            abDAO.createAddress(address);
-        }
-        assertEquals(525, abDAO.getAddressBookSize());
-        assertEquals(525, abDAO.getAddress(525).getId());
-        assertEquals("First525", abDAO.getAddress(525).getFirstName());
-        assertEquals("Last525", abDAO.getAddress(525).getLastName());
-        assertEquals("Street525", abDAO.getAddress(525).getStreet());
-        assertEquals("City525", abDAO.getAddress(525).getCity());
-        assertEquals("State525", abDAO.getAddress(525).getState());
-        assertEquals("525", abDAO.getAddress(525).getZip());
-    }
+    
     
     @Test
     public void testDelete() {
-        for (int i = 1; i <= 525; i++) {
+        int addressToDelete = 0;
+        for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
             Address address = new Address();
+            
+            city.setCityName("CityName");
+            city.setStateID(i);
+            state.setStateID(i);
             address.setFirstName("First" + i);
             address.setLastName("Last" + i);
             address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
             abDAO.createAddress(address);
+            addressToDelete = address.getId();
         }
         
-        abDAO.deleteAddress(300);
-        assertEquals(524, abDAO.getAddressBookSize());
+        abDAO.deleteAddress(addressToDelete);
+        assertEquals(9, abDAO.getAddressBookSize());
         
-        abDAO.deleteAddress(1);
-        abDAO.deleteAddress(2);
-        abDAO.deleteAddress(3);
-        abDAO.deleteAddress(4);
-        assertEquals(520, abDAO.getAddressBookSize());   
-                
-        assertEquals(525, abDAO.getAddress(525).getId());
-        assertEquals("First525", abDAO.getAddress(525).getFirstName());
-        
-        Address address = new Address();
-        address.setFirstName("Firstafter");
-        address.setLastName("Lastafter");
-        address.setStreet("Streetafter");
-        address.setCity("Cityafter");
-        address.setState("Stateafter");
-        address.setZip("" + 55555);
-        abDAO.createAddress(address);
-        
-        assertEquals(address, abDAO.getAddress(526));
-        assertEquals(521, abDAO.getAddressBookSize()); 
+        abDAO.deleteAddress(addressToDelete - 1);
+        abDAO.deleteAddress(addressToDelete - 2);
+        assertEquals(7, abDAO.getAddressBookSize());   
+
     }
     
     @Test
     public void testUpdateAddress() {
-        for (int i = 1; i <= 10; i++) {
-            Address address = new Address();
-            address.setFirstName("First" + i);
-            address.setLastName("Last" + i);
-            address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
-            abDAO.createAddress(address);
-        }
+        City city = new City();
+        State state = new State();
+        Address address = new Address();
         
-        Address updatedAddress = new Address();
-        updatedAddress.setFirstName("FirstUpdate");
-        updatedAddress.setLastName("LastUpdate");
-        updatedAddress.setStreet("StreetUpdate");
-        updatedAddress.setCity("CityUpdate");
-        updatedAddress.setState("StateUpdate");
-        updatedAddress.setZip("" + 55555);
+        city.setCityName("CityName");
+        city.setStateID(1);
+        state.setStateID(1);
+        address.setFirstName("First");
+        address.setLastName("Last");
+        address.setStreet("Street");
+        address.setCity(city);
+        address.setState(state);
+        address.setZip("12345");
+        abDAO.createAddress(address);
         
-        abDAO.updateAddress(5, updatedAddress);
+        assertEquals(1, abDAO.getAddressBookSize());
+        assertEquals("First", abDAO.getAddress(address.getId()).getFirstName());
+        assertEquals("Last", abDAO.getAddress(address.getId()).getLastName());
+        assertEquals("Street", abDAO.getAddress(address.getId()).getStreet());
+        assertEquals("CityName", abDAO.getAddress(address.getId()).getCity().getCityName());
+        assertEquals("Alabama", abDAO.getAddress(address.getId()).getState().getStateName());
+        assertEquals("12345", abDAO.getAddress(address.getId()).getZip());
         
-        assertEquals(updatedAddress, abDAO.getAddress(5));
-        assertEquals(10, abDAO.getAddressBookSize()); 
+        int addressID = address.getId();
+        city = new City();
+        state = new State();
+        address = new Address();
+        address = abDAO.getAddress(addressID);
+        
+        city.setCityName("UpdatedCityName");
+        city.setStateID(2);
+        state.setStateID(2);
+        address.setFirstName("UpdatedFirst");
+        address.setLastName("UpdatedLast");
+        address.setStreet("UpdatedStreet");
+        address.setCity(city);
+        address.setState(state);
+        address.setZip("54321");
+        abDAO.updateAddress(address);
+        
+        assertEquals(1, abDAO.getAddressBookSize());
+        assertEquals("UpdatedFirst", abDAO.getAddress(address.getId()).getFirstName());
+        assertEquals("UpdatedLast", abDAO.getAddress(address.getId()).getLastName());
+        assertEquals("UpdatedStreet", abDAO.getAddress(address.getId()).getStreet());
+        assertEquals("UpdatedCityName", abDAO.getAddress(address.getId()).getCity().getCityName());
+        assertEquals("Alaska", abDAO.getAddress(address.getId()).getState().getStateName());
+        assertEquals("54321", abDAO.getAddress(address.getId()).getZip());
     }
     
     @Test
     public void testSearchByFullName() {
         for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
             Address address = new Address();
+            
+            city.setCityName("CityName");
+            city.setStateID(i);
+            state.setStateID(i);
             address.setFirstName("First" + i);
             address.setLastName("Last" + i);
             address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
             abDAO.createAddress(address);
         }
         
-      //  assertEquals(1, abDAO.searchByName("Last1").size());
-      //  int id = abDAO.searchByName("Last1").get(0);
-     //   assertEquals(1, id);
-      //  assertEquals(1, abDAO.searchByName("First5", "Last5").size());
-      //  id = abDAO.searchByName("First5", "Last5").get(0);
-     //   assertEquals(5, id);
+        assertEquals(10, abDAO.searchByName("").size());
+        assertEquals(10, abDAO.searchByName("first").size());
+        assertEquals(10, abDAO.searchByName("last").size());
+        assertEquals(10, abDAO.searchByName("first last").size());
+        assertEquals(10, abDAO.searchByName("fi la").size());
+        assertEquals(10, abDAO.searchByName("f l").size());
+        assertEquals(2, abDAO.searchByName("first1").size());
+        assertEquals(1, abDAO.searchByName("f last3").size());
+        assertEquals(0, abDAO.searchByName("firstlast").size());
+    }
+    
+    @Test
+    public void testSearchByCity() {
+        for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
+            Address address = new Address();
+            
+            city.setCityName("City Name" + i);
+            city.setStateID(i);
+            state.setStateID(i);
+            address.setFirstName("First" + i);
+            address.setLastName("Last" + i);
+            address.setStreet("Street" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
+            abDAO.createAddress(address);
+        }
         
+        assertEquals(10, abDAO.searchByCity("").size());
+        assertEquals(10, abDAO.searchByCity("City Name").size());
+        assertEquals(10, abDAO.searchByCity("city").size());
+        assertEquals(10, abDAO.searchByCity("y name").size());
+        assertEquals(2, abDAO.searchByCity("City Name1").size());
+        assertEquals(1, abDAO.searchByCity("Name2").size());
+        assertEquals(0, abDAO.searchByCity("cityname").size());
+    }
+
+    @Test
+    public void testSearchByState() {
+        for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
+            Address address = new Address();
+            
+            city.setCityName("CityName");
+            city.setStateID(i);
+            state.setStateID(i);
+            address.setFirstName("First" + i);
+            address.setLastName("Last" + i);
+            address.setStreet("Street" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
+            abDAO.createAddress(address);
+        }
+        
+        City city = new City();
+        State state = new State();
         Address address = new Address();
-        address.setFirstName("First5");
-        address.setLastName("Last5");
-        address.setStreet("Street5");
-        address.setCity("City5");
-        address.setState("State5");
-        address.setZip("" + 12345);
+        
+        city.setCityName("CityName");
+        city.setStateID(1);
+        state.setStateID(1);
+        address.setFirstName("First");
+        address.setLastName("Last");
+        address.setStreet("Street");
+        address.setCity(city);
+        address.setState(state);
+        address.setZip("12345");
         abDAO.createAddress(address);
         
-       // assertEquals(2, abDAO.searchByName("First5", "Last5").size());
-       // assertTrue(abDAO.searchByName("First5", "Last5").contains(5));
-        //assertTrue(abDAO.searchByName("First5", "Last5").contains(11));
+        assertEquals(11, abDAO.searchByState("").size());
+        assertEquals(2, abDAO.searchByState("alabama").size());
+        assertEquals(4, abDAO.searchByState("al").size());
+        assertEquals(1, abDAO.searchByState("alaska").size());
+        assertEquals(1, abDAO.searchByState("ak").size());
+        assertEquals(1, abDAO.searchByState("Cal").size());
+        assertEquals(1, abDAO.searchByState("CA").size());
+        assertEquals(0, abDAO.searchByState("carolina").size());
     }
     
     @Test
-    public void testSearches() {
+    public void testSearchByZip() {
         for (int i = 1; i <= 10; i++) {
+            City city = new City();
+            State state = new State();
             Address address = new Address();
+            
+            city.setCityName("CityName");
+            city.setStateID(i);
+            state.setStateID(i);
             address.setFirstName("First" + i);
             address.setLastName("Last" + i);
             address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
+            address.setCity(city);
+            address.setState(state);
+            address.setZip("12345");
             abDAO.createAddress(address);
         }
         
-        assertEquals(10, abDAO.searchByName("Last").size());
-        assertEquals(1, abDAO.searchByName("Last3").size());
-        assertEquals(1, abDAO.searchByName("last5").size());
-        assertEquals(0, abDAO.searchByName("Laawegfstafew1").size());
+        City city = new City();
+        State state = new State();
+        Address address = new Address();
         
-        assertEquals(10, abDAO.searchByCity("City").size());
-        assertEquals(1, abDAO.searchByCity("City7").size());
-        assertEquals(1, abDAO.searchByCity("city3").size());
-        assertEquals(0, abDAO.searchByCity("awofgih").size());
+        city.setCityName("CityName");
+        city.setStateID(1);
+        state.setStateID(1);
+        address.setFirstName("First");
+        address.setLastName("Last");
+        address.setStreet("Street");
+        address.setCity(city);
+        address.setState(state);
+        address.setZip("54321");
+        abDAO.createAddress(address);
         
-        assertEquals(10, abDAO.searchByState("State").size());
-        assertEquals(1, abDAO.searchByState("State3").size());
-        assertEquals(1, abDAO.searchByState("state9").size());
-        assertEquals(0, abDAO.searchByState("wfeft").size());
-        
-        assertEquals(10, abDAO.searchByZip("").size());
-        assertEquals(2, abDAO.searchByZip("1").size());
-        assertEquals(1, abDAO.searchByZip("2").size());
-        assertEquals(0, abDAO.searchByZip("99").size());
-    }
-    
-    @Test
-    public void testGetAllAddresses() {
-        for (int i = 1; i <= 10; i++) {
-            Address address = new Address();
-            address.setFirstName("First" + i);
-            address.setLastName("Last" + i);
-            address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
-            abDAO.createAddress(address);
-        }
-        
-        assertEquals(10, abDAO.getAllAddresses().size());
-        
-    }
-    
-    @Test
-    public void testGetAddressBookSize() {
-        for (int i = 1; i <= 10; i++) {
-            Address address = new Address();
-            address.setFirstName("First" + i);
-            address.setLastName("Last" + i);
-            address.setStreet("Street" + i);
-            address.setCity("City" + i);
-            address.setState("State" + i);
-            address.setZip("" + i);
-            abDAO.createAddress(address);
-        }
-        
-        assertEquals(10, abDAO.getAddressBookSize());
+        assertEquals(11, abDAO.searchByZip("").size());
+        assertEquals(11, abDAO.searchByZip("5").size());
+        assertEquals(10, abDAO.searchByZip("12345").size());
+        assertEquals(1, abDAO.searchByZip("54321").size());
     }
 }
