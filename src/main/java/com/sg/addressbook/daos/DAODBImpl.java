@@ -59,21 +59,18 @@ public class DAODBImpl implements AddressBookDAO {
             + "a.cityID, a.stateID, zip from Addresses a "
             + "join Cities c on a.cityID = c.cityID "
             + "where c.cityName like ? "
-            + "group by a.stateID, addressID, firstName, lastName, street, a.cityID, zip "
-            + "order by lastName asc, firstName asc, a.stateID asc, c.cityName asc";
+            + "order by a.stateID asc, c.cityName asc, lastName asc, firstName asc";
     private static final String SEARCH_BY_STATE = "select distinct addressID, firstName, lastName, street, "
             + "a.cityID, a.stateID, zip from Addresses a "
             + "join States s on a.stateID = s.stateID "
             + "join Cities c on a.cityID = c.cityID "
             + "where stateName like ? or stateInitials = ? "
-            + "group by a.stateID, addressID, firstName, lastName, street, a.cityID, zip "
-            + "order by lastName asc, firstName asc, a.stateID asc, c.cityName asc";
+            + "order by a.stateID asc, c.cityName asc, lastName asc, firstName asc";
     private static final String SEARCH_BY_ZIP = "select distinct addressID, firstName, lastName, street, "
             + "a.cityID, a.stateID, zip from Addresses a "
             + "join Cities c on a.cityID = c.cityID "
             + "where zip like ? "
-            + "group by a.stateID, addressID, firstName, lastName, street, a.cityID, zip "
-            + "order by lastName asc, firstName asc, a.stateID asc, c.cityName asc";
+            + "order by a.stateID asc, c.cityName asc, lastName asc, firstName asc";
     
     private static final String GET_ALL_STATES = "select stateID, stateName, stateInitials from States";
     private static final String GET_STATE_ID = "select stateID from States where stateName = ?";
